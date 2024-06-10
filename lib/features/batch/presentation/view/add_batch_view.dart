@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:student_management_starter/features/batch/data/model/batch_hive_model.dart';
+import 'package:student_management_starter/features/batch/domain/entity/batch_entity.dart';
+import 'package:student_management_starter/features/batch/presentation/viewmodel/batch_view_model.dart';
 
 class AddBatchView extends ConsumerStatefulWidget {
   const AddBatchView({super.key});
@@ -15,7 +16,7 @@ class _AddBatchViewState extends ConsumerState<AddBatchView> {
   final batchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    var batchState = ref.watch(batchHiveModelProvider);
+    var batchState = ref.watch(batchViewModelProvider);
     return Scaffold(
       body: SafeArea(
         child: Form(
@@ -49,15 +50,15 @@ class _AddBatchViewState extends ConsumerState<AddBatchView> {
                     return null;
                   },
                 ),
+
                 gap,
+
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                       
-                            
-                      }
+                      ref.read(batchViewModelProvider.notifier).addBatch(
+                          BatchEntity(batchName: batchController.text));
                     },
                     child: const Text('Add Batch'),
                   ),
@@ -73,6 +74,32 @@ class _AddBatchViewState extends ConsumerState<AddBatchView> {
                     ),
                   ),
                 ),
+                gap,
+                //Display List of Courses
+                if (batchState.isLoading) ...{
+                  const Center(child: CircularProgressIndicator()),
+                } else if (batchState.error != null) ...{
+                  Text(batchState.error.toString()),
+                } else if (batchState.lstBatches.isEmpty) ...{
+                  const Center(
+                    child: Text('No Courses'),
+                  )
+                } else ...{
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: batchState.lstBatches.length,
+                      itemBuilder: (context, index) {
+                        var batch = batchState.lstBatches[index];
+                        return ListTile(
+                          title: Text(batch.batchName),
+                          subtitle: Text(batch.batchId ?? ''),
+                          trailing: IconButton(
+                              icon: const Icon(Icons.delete), onPressed: () {}),
+                        );
+                      },
+                    ),
+                  )
+                },
               ],
             ),
           ),

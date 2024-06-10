@@ -19,6 +19,8 @@ class BatchState {
     );
   }
 
+  get lstCourses => null;
+
   BatchState copywith({
     List<BatchEntity>? lstBatches,
     bool? isLoading,
