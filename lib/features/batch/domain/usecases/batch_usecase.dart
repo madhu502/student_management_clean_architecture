@@ -21,4 +21,8 @@ class BatchUseCase {
   Future<Either<Failure, List<BatchEntity>>> getAllBatches() {
     return batchRepository.getAllBatches();
   }
+   // For deleting a batch
+  Future<Either<Failure, bool>> deleteBatch(String id) {
+    return batchRepository.deleteBatch(id);
+  }
 }

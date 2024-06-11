@@ -283,7 +283,9 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (_key.currentState!.validate()) {}
+                        if (_key.currentState!.validate()) {
+                          _key.currentState!.save();
+                        }
                       },
                       child: const Text('Register'),
                     ),

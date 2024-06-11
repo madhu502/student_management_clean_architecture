@@ -30,6 +30,10 @@ class HiveService {
     var batches = box.values.toList();
     return batches;
   }
+   Future<void> deleteBatch(String id) async {
+    var box = await Hive.openBox<BatchHiveModel>(HiveTableConstant.batchBox);
+    await box.delete(id);
+  }
 
   //courses
 
@@ -43,5 +47,9 @@ class HiveService {
     var box = await Hive.openBox<CourseHiveModel>(HiveTableConstant.courseBox);
     var courses = box.values.toList();
     return courses;
+  }
+  Future<void> deleteCourse(String id) async {
+    var box = await Hive.openBox<CourseHiveModel>(HiveTableConstant.courseBox);
+    await box.delete(id);
   }
 }

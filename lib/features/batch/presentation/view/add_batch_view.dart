@@ -82,7 +82,7 @@ class _AddBatchViewState extends ConsumerState<AddBatchView> {
                   Text(batchState.error.toString()),
                 } else if (batchState.lstBatches.isEmpty) ...{
                   const Center(
-                    child: Text('No Courses'),
+                    child: Text('No Batches'),
                   )
                 } else ...{
                   Expanded(
@@ -94,7 +94,9 @@ class _AddBatchViewState extends ConsumerState<AddBatchView> {
                           title: Text(batch.batchName),
                           subtitle: Text(batch.batchId ?? ''),
                           trailing: IconButton(
-                              icon: const Icon(Icons.delete), onPressed: () {}),
+                              icon: const Icon(Icons.delete), onPressed: () {ref
+                                .read(batchViewModelProvider.notifier)
+                                .deleteBatch(batch.batchId!);}),
                         );
                       },
                     ),

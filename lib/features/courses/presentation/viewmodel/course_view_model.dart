@@ -18,20 +18,40 @@ class CourseViewModel extends StateNotifier<CourseState> {
 
   final CourseUseCase courseUseCase;
 
+// to delete course
+  deleteCourse(CourseEntity course) async {
+    state.copyWith(isLoading: true);
+    var data = await courseUseCase.deleteCourse(course.courseId!);
+
+    data.fold(
+      (l) {
+        state = state.copyWith(isLoading: false, error: l.error);
+        showMySnackBar(message: l.error, color: Colors.red);
+      },
+      (r) {
+        state.lstCourses.remove(course);
+        state = state.copyWith(isLoading: false, error: null);
+        showMySnackBar(
+          message: 'Course delete successfully',
+        );
+      },
+    );
+  }
+
   addCourse(CourseEntity course) async {
     //to show the progressbar
-    state = state.copywith(isLoading: true);
+    state = state.copyWith(isLoading: true);
     var data = await courseUseCase.addCourse(course);
 
     data.fold(
       (l) {
         //show error message
-        state = state.copywith(isLoading: false, error: l.error);
+        state = state.copyWith(isLoading: false, error: l.error);
         showMySnackBar(message: l.error, color: Colors.red);
       },
       (r) {
         //show success message
-        state = state.copywith(isLoading: false, error: null);
+        state = state.copyWith(isLoading: false, error: null);
         showMySnackBar(message: 'Course added successfully!');
       },
     );
@@ -41,17 +61,17 @@ class CourseViewModel extends StateNotifier<CourseState> {
   //for getting all courses
   getAllCourses() async {
     //To show the progress bar
-    state = state.copywith(isLoading: true);
+    state = state.copyWith(isLoading: true);
     var data = await courseUseCase.getAllCourses();
 
     data.fold(
       (l) {
         //show error message
-        state = state.copywith(isLoading: false, error: l.error);
+        state = state.copyWith(isLoading: false, error: l.error);
       },
       (r) {
         //show success message or simply load data in UI
-        state = state.copywith(isLoading: false, lstCourses: r, error: null);
+        state = state.copyWith(isLoading: false, lstCourses: r, error: null);
       },
     );
   }

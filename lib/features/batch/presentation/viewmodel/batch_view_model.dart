@@ -12,26 +12,47 @@ final batchViewModelProvider =
 });
 
 class BatchViewModel extends StateNotifier<BatchState> {
-  BatchViewModel(this.batchUseCase) : super(BatchState.initial()){
+  BatchViewModel(this.batchUseCase) : super(BatchState.initial()) {
     getAllBatches();
   }
 
   final BatchUseCase batchUseCase;
 
+  // For deleting a batch
+  deleteBatch(String id) async {
+    // To show the progress bar
+    state = state.copyWith(isLoading: true);
+    var data = await batchUseCase.deleteBatch(id);
+
+    data.fold(
+      (l) {
+        state = state.copyWith(isLoading: false, error: l.error);
+        showMySnackBar(message: l.error, color: Colors.red);
+      },
+      (r) {
+        state = state.copyWith(isLoading: false, error: null);
+        showMySnackBar(message: "Batch deleted successfully");
+      },
+    );
+
+    getAllBatches();
+  }
+
+
   addBatch(BatchEntity batch) async {
     //to show the progressbar
-    state = state.copywith(isLoading: true);
+    state = state.copyWith(isLoading: true);
     var data = await batchUseCase.addBatch(batch);
 
     data.fold(
       (l) {
         //show error message
-        state = state.copywith(isLoading: false, error: l.error);
+        state = state.copyWith(isLoading: false, error: l.error);
         showMySnackBar(message: l.error, color: Colors.red);
       },
       (r) {
         //show success message
-        state = state.copywith(isLoading: false, error: null);
+        state = state.copyWith(isLoading: false, error: null);
         showMySnackBar(message: 'Batch added successfully!');
       },
     );
@@ -41,17 +62,17 @@ class BatchViewModel extends StateNotifier<BatchState> {
   //for getting all batches
   getAllBatches() async {
     //To show the progress bar
-    state = state.copywith(isLoading: true);
+    state = state.copyWith(isLoading: true);
     var data = await batchUseCase.getAllBatches();
 
     data.fold(
       (l) {
         //show error message
-        state = state.copywith(isLoading: false, error: l.error);
+        state = state.copyWith(isLoading: false, error: l.error);
       },
       (r) {
         //show success message or simply load data in UI
-        state = state.copywith(isLoading: false, lstBatches: r, error: null);
+        state = state.copyWith(isLoading: false, lstBatches: r, error: null);
       },
     );
   }

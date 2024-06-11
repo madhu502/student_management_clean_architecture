@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student_management_starter/features/courses/domain/entity/course_entity.dart';
 import 'package:student_management_starter/features/courses/presentation/viewmodel/course_view_model.dart';
+import 'package:student_management_starter/features/courses/presentation/widgets/load_course.dart';
 
 class AddCourseView extends ConsumerStatefulWidget {
   const AddCourseView({super.key});
@@ -52,15 +53,16 @@ class _AddCourseViewState extends ConsumerState<AddCourseView> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    ref.read(courseViewModelProvider.notifier).addCourse(
-                        CourseEntity(courseName: courseController.text));
+                    CourseEntity course =
+                        CourseEntity(courseName: courseController.text);
+                    ref
+                        .read(courseViewModelProvider.notifier)
+                        .addCourse(course);
                   },
                   child: const Text('Add Course'),
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              gap,
               const Align(
                 alignment: Alignment.center,
                 child: Text(
@@ -71,33 +73,19 @@ class _AddCourseViewState extends ConsumerState<AddCourseView> {
                   ),
                 ),
               ),
-
               gap,
-              //Display List of Courses
               if (courseState.isLoading) ...{
-                const Center(child: CircularProgressIndicator()),
+                const CircularProgressIndicator(),
               } else if (courseState.error != null) ...{
-                Text(courseState.error.toString()),
-              } else if (courseState.lstCourses.isEmpty) ...{
-                const Center(
-                  child: Text('No Courses'),
-                )
-              } else ...{
+                Text(courseState.error!),
+              } else if (courseState.lstCourses.isNotEmpty) ...{
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: courseState.lstCourses.length,
-                    itemBuilder: (context, index) {
-                      var course = courseState.lstCourses[index];
-                      return ListTile(
-                        title: Text(course.courseName),
-                        subtitle: Text(course.courseId ?? ''),
-                        trailing: IconButton(
-                            icon: const Icon(Icons.delete), onPressed: () {}),
-                      );
-                    },
+                  child: LoadCourse(
+                    lstCourse: courseState.lstCourses,
+                    ref: ref,
                   ),
-                )
-              },
+                ),
+              }
             ],
           ),
         ),

@@ -52,4 +52,15 @@ class CourseLocalDataSource {
       return Left(Failure(error: e.toString()));
     }
   }
+
+  // Delete Course
+  Future<Either<Failure, bool>> deleteCourse(String id) async {
+    try {
+      // Delete from Hive
+      await hiveService.deleteCourse(id);
+      return const Right(true);
+    } catch (e) {
+      return Left(Failure(error: e.toString()));
+    }
+  }
 }

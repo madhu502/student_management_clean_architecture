@@ -19,7 +19,7 @@ class CourseState {
     );
   }
 
-  CourseState copywith({
+  CourseState copyWith({
     List<CourseEntity>? lstCourses,
     bool? isLoading,
     String? error,

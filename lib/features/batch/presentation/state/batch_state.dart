@@ -21,7 +21,7 @@ class BatchState {
 
   get lstCourses => null;
 
-  BatchState copywith({
+  BatchState copyWith({
     List<BatchEntity>? lstBatches,
     bool? isLoading,
     String? error,

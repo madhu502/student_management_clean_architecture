@@ -40,4 +40,14 @@ class CourseHiveModel {
   //convert hive list to entity list
   List<CourseEntity> toEntityList(List<CourseHiveModel> models) =>
       models.map((model) => model.toEntity()).toList();
+
+  // to hive model
+  List<CourseHiveModel> fromEntityList(List<CourseEntity> entities) {
+    return entities.map((entity) => fromEntity(entity)).toList();
+  }
+
+  @override
+  String toString() {
+    return 'courseId: $courseId, courseName: $courseName';
+  }
 }
