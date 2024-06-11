@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student_management_starter/features/batch/domain/entity/batch_entity.dart';
 import 'package:student_management_starter/features/batch/presentation/viewmodel/batch_view_model.dart';
+import 'package:student_management_starter/features/batch/presentation/widgets/load_batch.dart';
 
 class AddBatchView extends ConsumerStatefulWidget {
   const AddBatchView({super.key});
@@ -86,21 +87,11 @@ class _AddBatchViewState extends ConsumerState<AddBatchView> {
                   )
                 } else ...{
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: batchState.lstBatches.length,
-                      itemBuilder: (context, index) {
-                        var batch = batchState.lstBatches[index];
-                        return ListTile(
-                          title: Text(batch.batchName),
-                          subtitle: Text(batch.batchId ?? ''),
-                          trailing: IconButton(
-                              icon: const Icon(Icons.delete), onPressed: () {ref
-                                .read(batchViewModelProvider.notifier)
-                                .deleteBatch(batch.batchId!);}),
-                        );
-                      },
+                    child: LoadBatch(
+                      lstBatches: batchState.lstBatches,
+                      ref: ref,
                     ),
-                  )
+                  ),
                 },
               ],
             ),

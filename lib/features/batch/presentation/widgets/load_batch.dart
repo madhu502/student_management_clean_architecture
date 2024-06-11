@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:student_management_starter/features/courses/domain/entity/course_entity.dart';
-import 'package:student_management_starter/features/courses/presentation/viewmodel/course_view_model.dart';
+import 'package:student_management_starter/features/batch/domain/entity/batch_entity.dart';
+import 'package:student_management_starter/features/batch/presentation/viewmodel/batch_view_model.dart';
 
-class LoadCourse extends StatelessWidget {
+class LoadBatch extends StatelessWidget {
   final WidgetRef ref;
-  final List<CourseEntity> lstCourses;
-  const LoadCourse({super.key, required this.lstCourses, required this.ref});
+  final List<BatchEntity> lstBatches;
+  const LoadBatch({super.key, required this.lstBatches, required this.ref});
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: lstCourses.length,
+      itemCount: lstBatches.length,
       itemBuilder: ((context, index) => ListTile(
-            title: Text(lstCourses[index].courseName),
-            subtitle: Text(lstCourses[index].courseId ?? ""),
+            title: Text(lstBatches[index].batchName),
+            subtitle: Text(lstBatches[index].batchId ?? ""),
             trailing: IconButton(
               onPressed: () {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
                     title: Text(
-                        'Are you sure you want to delete ${lstCourses[index].courseName}?'),
+                        'Are you sure you want to delete ${lstBatches[index].batchName}?'),
                     actions: [
                       TextButton(
                           onPressed: () {
@@ -32,8 +32,8 @@ class LoadCourse extends StatelessWidget {
                           onPressed: () {
                             Navigator.pop(context);
                             ref
-                                .read(courseViewModelProvider.notifier)
-                                .deleteCourse(lstCourses[index]);
+                            .read(batchViewModelProvider.notifier)
+                            .deleteBatch(lstBatches[index]);
                           },
                           child: const Text('Yes')),
                     ],

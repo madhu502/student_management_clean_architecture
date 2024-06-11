@@ -18,27 +18,6 @@ class BatchViewModel extends StateNotifier<BatchState> {
 
   final BatchUseCase batchUseCase;
 
-  // For deleting a batch
-  deleteBatch(String id) async {
-    // To show the progress bar
-    state = state.copyWith(isLoading: true);
-    var data = await batchUseCase.deleteBatch(id);
-
-    data.fold(
-      (l) {
-        state = state.copyWith(isLoading: false, error: l.error);
-        showMySnackBar(message: l.error, color: Colors.red);
-      },
-      (r) {
-        state = state.copyWith(isLoading: false, error: null);
-        showMySnackBar(message: "Batch deleted successfully");
-      },
-    );
-
-    getAllBatches();
-  }
-
-
   addBatch(BatchEntity batch) async {
     //to show the progressbar
     state = state.copyWith(isLoading: true);
@@ -75,5 +54,26 @@ class BatchViewModel extends StateNotifier<BatchState> {
         state = state.copyWith(isLoading: false, lstBatches: r, error: null);
       },
     );
+  }
+
+  // For deleting a batch
+  deleteBatch(BatchEntity batch) async {
+    // To show the progress bar
+    state = state.copyWith(isLoading: true);
+    var data = await batchUseCase.deleteBatch(batch.batchId!);
+
+    data.fold(
+      (l) {
+        state = state.copyWith(isLoading: false, error: l.error);
+        showMySnackBar(message: l.error, color: Colors.red);
+      },
+      (r) {
+        state.lstBatches.remove(batch);
+        state = state.copyWith(isLoading: false, error: null);
+        showMySnackBar(message: "Batch deleted successfully");
+      },
+    );
+
+    getAllBatches();
   }
 }

@@ -81,7 +81,7 @@ class _AddCourseViewState extends ConsumerState<AddCourseView> {
               } else if (courseState.lstCourses.isNotEmpty) ...{
                 Expanded(
                   child: LoadCourse(
-                    lstCourse: courseState.lstCourses,
+                    lstCourses: courseState.lstCourses,
                     ref: ref,
                   ),
                 ),
