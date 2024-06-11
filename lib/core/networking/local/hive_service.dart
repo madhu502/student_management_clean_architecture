@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:student_management_starter/app/constants/hive_table_constant.dart';
+import 'package:student_management_starter/features/auth/data/model/auth_hive_model.dart';
 import 'package:student_management_starter/features/batch/data/model/batch_hive_model.dart';
 import 'package:student_management_starter/features/courses/data/model/course_hive_model.dart';
 
@@ -17,6 +18,29 @@ class HiveService {
 
     //course register adapter
     Hive.registerAdapter(CourseHiveModelAdapter());
+    Hive.registerAdapter(AuthHiveModelAdapter());
+  }
+
+//===============================================Auth Queries===============================================
+  Future<void> addStudent(AuthHiveModel student) async {
+    var box = await Hive.openBox<AuthHiveModel>(HiveTableConstant.studentBox);
+    await box.put(student.studentId, student);
+  }
+
+  Future<List<AuthHiveModel>> getAllStudents() async {
+    var box = await Hive.openBox<AuthHiveModel>(HiveTableConstant.studentBox);
+    var students = box.values.toList();
+    box.close();
+    return students;
+  }
+
+  //Login
+  Future<AuthHiveModel?> login(String username, String password) async {
+    var box = await Hive.openBox<AuthHiveModel>(HiveTableConstant.studentBox);
+    var student = box.values.firstWhere((element) =>
+        element.username == username && element.password == password);
+    box.close();
+    return student;
   }
 
   //===============================================Batch Queries===============================================
@@ -30,7 +54,8 @@ class HiveService {
     var batches = box.values.toList();
     return batches;
   }
-   Future<void> deleteBatch(String id) async {
+
+  Future<void> deleteBatch(String id) async {
     var box = await Hive.openBox<BatchHiveModel>(HiveTableConstant.batchBox);
     await box.delete(id);
   }
@@ -48,6 +73,7 @@ class HiveService {
     var courses = box.values.toList();
     return courses;
   }
+
   Future<void> deleteCourse(String id) async {
     var box = await Hive.openBox<CourseHiveModel>(HiveTableConstant.courseBox);
     await box.delete(id);

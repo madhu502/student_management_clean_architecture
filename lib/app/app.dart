@@ -14,6 +14,8 @@ class App extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       title: 'Student Management',
       theme: AppTheme.getApplicationTheme(false),
+      darkTheme: ThemeData.dark(), // standard dark theme
+      themeMode: ThemeMode.system,
       home: const SplashView(),
     );
   }

@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:student_management_starter/features/batch/domain/entity/batch_entity.dart';
-
 import 'package:student_management_starter/features/courses/domain/entity/course_entity.dart';
 
 class AuthEntity extends Equatable {
