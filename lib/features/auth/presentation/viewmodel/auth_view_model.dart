@@ -26,6 +26,7 @@ class AuthViewModel extends StateNotifier<AuthState> {
     data.fold(
       (l) {
         state = state.copyWith(isLoading: false, error: l.error);
+        showMySnackBar(message: l.error);
       },
       (imageName) {
         state =
