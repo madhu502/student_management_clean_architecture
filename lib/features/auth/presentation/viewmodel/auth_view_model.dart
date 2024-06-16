@@ -8,74 +8,56 @@ import 'package:student_management_starter/features/auth/domain/usecases/auth_us
 import 'package:student_management_starter/features/auth/presentation/navigator/login_navigator.dart';
 import 'package:student_management_starter/features/auth/presentation/state/auth_state.dart';
 
-final authViewModelProvider = StateNotifierProvider<AuthViewModel, AuthState>(
-  (ref) => AuthViewModel(
-    ref.read(loginViewNavigatorProvider),
-    ref.read(authUseCaseProvider),
-  ),
-);
+final authViewModelProvider =
+    StateNotifierProvider<AuthViewModel, AuthState>((ref) {
+  final navigator = ref.read(loginViewNavigatorProvider);
+  return AuthViewModel(ref.read(authUseCaseProvider), navigator);
+});
 
 class AuthViewModel extends StateNotifier<AuthState> {
-  AuthViewModel(this.navigator, this.authUseCase) : super(AuthState.initial());
+  AuthViewModel(this.authUseCase, this.navigator) : super(AuthState.initial());
+
   final AuthUseCase authUseCase;
   final LoginViewNavigator navigator;
+
+  void addStudent({required AuthEntity auth}) async {
+    state = state.copyWith(isLoading: true);
+    var data = await authUseCase.addStudent(auth);
+    data.fold((l) {
+      state = state.copyWith(isLoading: false, error: l.error);
+      showMySnackBar(message: l.error, color: Colors.red);
+    }, (r) {
+      state = state.copyWith(isLoading: false, error: null);
+      showMySnackBar(message: 'Student Added Successfully');
+    });
+  }
+
+  void login({required String username, required String password}) async {
+    state = state.copyWith(isLoading: true);
+    var data = await authUseCase.login(username, password);
+    data.fold((l) {
+      state = state.copyWith(isLoading: false, error: l.error);
+      showMySnackBar(message: "Invalid Credentials", color: Colors.red);
+    }, (r) {
+      state = state.copyWith(isLoading: false, error: null, token: r);
+      showMySnackBar(message: 'Login Successful');
+      print(r);
+    });
+  }
 
   Future<void> uploadImage(File? file) async {
     state = state.copyWith(isLoading: true);
     var data = await authUseCase.uploadProfilePicture(file!);
-    data.fold(
-      (l) {
-        state = state.copyWith(isLoading: false, error: l.error);
-        showMySnackBar(message: l.error);
-      },
-      (imageName) {
-        state =
-            state.copyWith(isLoading: false, error: null, imageName: imageName);
-      },
-    );
-  }
-
-  Future<void> registerStudent(AuthEntity student) async {
-    state = state.copyWith(isLoading: true);
-    var data = await authUseCase.registerStudent(student);
-    data.fold(
-      (failure) {
-        state = state.copyWith(
-          isLoading: false,
-          error: failure.error,
-        );
-        showMySnackBar(message: failure.error, color: Colors.red);
-      },
-      (success) {
-        state = state.copyWith(isLoading: false, error: null);
-        showMySnackBar(message: "Successfully registered");
-      },
-    );
-  }
-
-  Future<void> loginStudent(
-    String username,
-    String password,
-  ) async {
-    state = state.copyWith(isLoading: true);
-    var data = await authUseCase.loginStudent(username, password);
-    data.fold(
-      (failure) {
-        state = state.copyWith(isLoading: false, error: failure.error);
-        showMySnackBar(message: failure.error, color: Colors.red);
-      },
-      (success) {
-        state = state.copyWith(isLoading: false, error: null);
-        openHomeView();
-      },
-    );
+    data.fold((l) {
+      state = state.copyWith(isLoading: false, error: l.error);
+      showMySnackBar(message: l.error, color: Colors.red);
+    }, (r) {
+      state = state.copyWith(imageName: r, isLoading: false, error: null);
+      showMySnackBar(message: 'Image Uploaded');
+    });
   }
 
   void openRegisterView() {
     navigator.openRegisterView();
-  }
-
-  void openHomeView() {
-    navigator.openHomeView();
   }
 }

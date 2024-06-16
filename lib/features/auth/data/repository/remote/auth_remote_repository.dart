@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student_management_starter/core/failure/failure.dart';
@@ -6,40 +7,30 @@ import 'package:student_management_starter/features/auth/data/data_source/remote
 import 'package:student_management_starter/features/auth/domain/entity/auth_entity.dart';
 import 'package:student_management_starter/features/auth/domain/repository/auth_repository.dart';
 
-final authRemoteRepositoryProvider = Provider<IAuthRepository>((ref) {
-  return AuthRemoteRepositoy(
-    ref.read(authRemoteDataSourceProvider),
-  );
+final authRemoteRepository = Provider<IAuthRepository>((ref) {
+  return AuthRemoteRepository(
+      authRemoteDataSource: ref.read(authRemoteDataSourceProvider));
 });
 
-class AuthRemoteRepositoy implements IAuthRepository {
-  final AuthRemoteDataSource _authRemoteDataSource;
-  AuthRemoteRepositoy(this._authRemoteDataSource);
+class AuthRemoteRepository implements IAuthRepository {
+  final AuthRemoteDataSource authRemoteDataSource;
+
+  AuthRemoteRepository({required this.authRemoteDataSource});
+  @override
+  Future<Either<Failure, bool>> addStudent(AuthEntity auth) {
+    return authRemoteDataSource.addStudent(auth);
+  }
+
+  @override
+  Future<Either<Failure, String>> login(String username, String password) {
+    return authRemoteDataSource.login(
+      username: username,
+      password: password,
+    );
+  }
 
   @override
   Future<Either<Failure, String>> uploadProfilePicture(File file) {
-    return _authRemoteDataSource.uploadProfilePicture(file);
+    return authRemoteDataSource.uploadProfilePicture(file);
   }
-  
-  @override
-  Future<Either<Failure, bool>> loginStudent(String username, String password) {
-    // TODO: implement loginStudent
-    throw UnimplementedError();
-  }
-  
-  @override
-  Future<Either<Failure, bool>> registerStudent(AuthEntity student) {
-    // TODO: implement registerStudent
-    throw UnimplementedError();
-  }
-
-  // @override
-  // Future<Either<Failure, bool>> loginStudent(String username, String password) {
-  //   return _authRemoteDataSource.loginStudent(username, password);
-  // }
-
-  // @override
-  // Future<Either<Failure, bool>> registerStudent(AuthEntity student) {
-  //   return _authRemoteDataSource.registerStudent(student);
-  // }
 }

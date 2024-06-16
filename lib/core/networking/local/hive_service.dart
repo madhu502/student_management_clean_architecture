@@ -13,37 +13,13 @@ class HiveService {
     var directory = await getApplicationDocumentsDirectory();
     Hive.init(directory.path);
 
-    //Register Adapters
+    // Register Adapters
     Hive.registerAdapter(BatchHiveModelAdapter());
-
-    //course register adapter
     Hive.registerAdapter(CourseHiveModelAdapter());
     Hive.registerAdapter(AuthHiveModelAdapter());
   }
 
-//===============================================Auth Queries===============================================
-  Future<void> addStudent(AuthHiveModel student) async {
-    var box = await Hive.openBox<AuthHiveModel>(HiveTableConstant.studentBox);
-    await box.put(student.studentId, student);
-  }
-
-  Future<List<AuthHiveModel>> getAllStudents() async {
-    var box = await Hive.openBox<AuthHiveModel>(HiveTableConstant.studentBox);
-    var students = box.values.toList();
-    box.close();
-    return students;
-  }
-
-  //Login
-  Future<AuthHiveModel?> login(String username, String password) async {
-    var box = await Hive.openBox<AuthHiveModel>(HiveTableConstant.studentBox);
-    var student = box.values.firstWhere((element) =>
-        element.username == username && element.password == password);
-    box.close();
-    return student;
-  }
-
-  //===============================================Batch Queries===============================================
+  // ======================Batch Queries================
   Future<void> addBatch(BatchHiveModel batch) async {
     var box = await Hive.openBox<BatchHiveModel>(HiveTableConstant.batchBox);
     await box.put(batch.batchId, batch);
@@ -55,14 +31,12 @@ class HiveService {
     return batches;
   }
 
-  Future<void> deleteBatch(String id) async {
+  Future<void> deleteBatch(BatchHiveModel batch) async {
     var box = await Hive.openBox<BatchHiveModel>(HiveTableConstant.batchBox);
-    await box.delete(id);
+    await box.delete(batch.batchId);
   }
 
-  //courses
-
-  //==========================================Course Queries=====================================================================
+  // ======================Course Queries================
   Future<void> addCourse(CourseHiveModel course) async {
     var box = await Hive.openBox<CourseHiveModel>(HiveTableConstant.courseBox);
     await box.put(course.courseId, course);
@@ -74,8 +48,26 @@ class HiveService {
     return courses;
   }
 
-  Future<void> deleteCourse(String id) async {
+  Future<void> deleteCourse(CourseHiveModel course) async {
     var box = await Hive.openBox<CourseHiveModel>(HiveTableConstant.courseBox);
-    await box.delete(id);
+    await box.delete(course.courseId);
+  }
+
+  // ============= Student Queries
+  Future<void> addStudent(AuthHiveModel auth) async {
+    var box = await Hive.openBox<AuthHiveModel>(HiveTableConstant.studentBox);
+    await box.put(auth.studentId, auth);
+  }
+
+  Future<AuthHiveModel> getStudent(String username) async {
+    var box = await Hive.openBox<AuthHiveModel>(HiveTableConstant.studentBox);
+    return box.values.firstWhere((element) => element.username == username);
+  }
+
+  Future<AuthHiveModel> login(String username, String password) async {
+    var box = await Hive.openBox<AuthHiveModel>(HiveTableConstant.studentBox);
+    var student = box.values.firstWhere((element) =>
+        element.username == username && element.password == password);
+    return student;
   }
 }

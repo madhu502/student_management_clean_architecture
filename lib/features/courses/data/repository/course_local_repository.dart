@@ -7,12 +7,11 @@ import 'package:student_management_starter/features/courses/domain/repository/co
 
 final courseLocalRepository = Provider<ICourseRepository>((ref) {
   return CourseLocalRepository(
-    courseLocalDataSource: ref.read(courseLocalDataSourceProvider),
-  );
+      courseLocalDataSource: ref.read(courseLocalSourceProvider));
 });
 
 class CourseLocalRepository implements ICourseRepository {
-  final CourseLocalDataSource courseLocalDataSource;
+  final CourseLocalSource courseLocalDataSource;
 
   CourseLocalRepository({required this.courseLocalDataSource});
 
@@ -25,9 +24,9 @@ class CourseLocalRepository implements ICourseRepository {
   Future<Either<Failure, List<CourseEntity>>> getAllCourses() {
     return courseLocalDataSource.getAllCourses();
   }
+
   @override
-  Future<Either<Failure, bool>> deleteCourse(String id) {
- 
-    return courseLocalDataSource.deleteCourse(id);
+  Future<Either<Failure, bool>> deleteCourse(CourseEntity course) {
+    return courseLocalDataSource.deleteCourse(course);
   }
 }

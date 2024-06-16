@@ -1,3 +1,4 @@
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,7 +8,6 @@ import 'package:student_management_starter/core/networking/remote/http_service.d
 import 'package:student_management_starter/features/batch/data/dto/get_all_batch_dto.dart';
 import 'package:student_management_starter/features/batch/data/model/batch_api_model.dart';
 import 'package:student_management_starter/features/batch/domain/entity/batch_entity.dart';
-
 
 final batchRemoteDataSourceProvider = Provider(
   (ref) => BatchRemoteDataSource(
@@ -79,6 +79,25 @@ class BatchRemoteDataSource {
           error: e.error.toString(),
         ),
       );
+    }
+  }
+
+  Future<Either<Failure, bool>> deleteBatch(BatchEntity batch) async {
+    try {
+      var response =
+          await dio.delete('${ApiEndpoints.deleteBatch}/${batch.batchId}');
+      if (response.statusCode == 200) {
+        return const Right(true);
+      } else {
+        return Left(
+          Failure(
+            error: response.data['message'],
+            statusCode: response.statusCode.toString(),
+          ),
+        );
+      }
+    } on DioException catch (e) {
+      return Left(Failure(error: e.error.toString()));
     }
   }
 }

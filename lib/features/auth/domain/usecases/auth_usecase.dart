@@ -6,25 +6,24 @@ import 'package:student_management_starter/core/failure/failure.dart';
 import 'package:student_management_starter/features/auth/domain/entity/auth_entity.dart';
 import 'package:student_management_starter/features/auth/domain/repository/auth_repository.dart';
 
-final authUseCaseProvider = Provider((ref) {
-  return AuthUseCase(ref.read(authRepositoryProvider));
+final authUseCaseProvider = Provider<AuthUseCase>((ref) {
+  return AuthUseCase(authRepository: ref.watch(authRepositoryProvider));
 });
 
 class AuthUseCase {
-  final IAuthRepository _authRepository;
+  final IAuthRepository authRepository;
 
-  AuthUseCase(this._authRepository);
+  AuthUseCase({required this.authRepository});
 
-  Future<Either<Failure, String>> uploadProfilePicture(File file) async {
-    return await _authRepository.uploadProfilePicture(file);
+  Future<Either<Failure, bool>> addStudent(AuthEntity auth) {
+    return authRepository.addStudent(auth);
   }
 
-  Future<Either<Failure, bool>> registerStudent(AuthEntity student) async {
-    return await _authRepository.registerStudent(student);
+  Future<Either<Failure, String>> login(String username, String password) {
+    return authRepository.login(username, password);
   }
 
-  Future<Either<Failure, bool>> loginStudent(
-      String username, String password) async {
-    return await _authRepository.loginStudent(username, password);
+  Future<Either<Failure, String>> uploadProfilePicture(File file) {
+    return authRepository.uploadProfilePicture(file);
   }
 }

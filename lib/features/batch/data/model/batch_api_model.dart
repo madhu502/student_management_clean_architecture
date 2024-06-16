@@ -1,41 +1,35 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:student_management_starter/features/batch/domain/entity/batch_entity.dart';
 
-final batchApiModelProvider = Provider<BatchApiModel>(
-  (ref) => BatchApiModel.empty(),
-);
+final batchApiModelProvider =
+    Provider<BatchApiModel>((ref) => const BatchApiModel.empty());
 
 @JsonSerializable()
-class BatchApiModel {
+class BatchApiModel extends Equatable {
   @JsonKey(name: '_id')
-  final String? batchId;
-
+  final String batchId;
   final String batchName;
 
-  BatchApiModel({
+  const BatchApiModel({
     required this.batchId,
     required this.batchName,
   });
 
-//Empty constructor
-  BatchApiModel.empty()
+  // Empty Constructor
+  const BatchApiModel.empty()
       : batchId = '',
         batchName = '';
 
-  // From Json , write full code without generator
+  // From Json(),
   factory BatchApiModel.fromJson(Map<String, dynamic> json) {
-    return BatchApiModel(
-      batchId: json['_id'],
-      batchName: json['batchName'],
-    );
+    return BatchApiModel(batchId: json['_id'], batchName: json['batchName']);
   }
 
-  // To Json , write full code without generator
+  // To Json
   Map<String, dynamic> toJson() {
-    return {
-      'batchName': batchName,
-    };
+    return {'batchName': batchName};
   }
 
   // Convert API Object to Entity

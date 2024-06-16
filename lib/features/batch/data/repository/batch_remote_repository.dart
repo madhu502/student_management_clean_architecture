@@ -5,30 +5,28 @@ import 'package:student_management_starter/features/batch/data/data_source/remot
 import 'package:student_management_starter/features/batch/domain/entity/batch_entity.dart';
 import 'package:student_management_starter/features/batch/domain/repository/batch_repository.dart';
 
-final batchRemoteRepository = Provider<IBatchRepository>((ref) {
-  return BatchRemoteRepositoryImpl(
+final batchRemoteRepository = Provider(
+  (ref) => BatchRemoteRepository(
     batchRemoteDataSource: ref.read(batchRemoteDataSourceProvider),
-  );
-});
+  ),
+);
 
-class BatchRemoteRepositoryImpl implements IBatchRepository {
+class BatchRemoteRepository implements IBatchRepository {
   final BatchRemoteDataSource batchRemoteDataSource;
 
-  BatchRemoteRepositoryImpl({required this.batchRemoteDataSource});
-
+  BatchRemoteRepository({required this.batchRemoteDataSource});
   @override
   Future<Either<Failure, bool>> addBatch(BatchEntity batch) {
     return batchRemoteDataSource.addBatch(batch);
   }
 
   @override
-  Future<Either<Failure, List<BatchEntity>>> getAllBatches() {
-    return batchRemoteDataSource.getAllBatches();
+  Future<Either<Failure, bool>> deleteBatch(BatchEntity batch) {
+    return batchRemoteDataSource.deleteBatch(batch);
   }
 
   @override
-  Future<Either<Failure, bool>> deleteBatch(String id) {
-    // TODO: implement deleteBatch
-    throw UnimplementedError();
+  Future<Either<Failure, List<BatchEntity>>> getAllBatches() {
+    return batchRemoteDataSource.getAllBatches();
   }
 }

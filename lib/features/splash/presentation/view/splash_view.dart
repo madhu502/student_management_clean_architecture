@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:student_management_starter/features/auth/presentation/view/login_view.dart';
 import 'package:student_management_starter/features/splash/presentation/viewmodel/splash_view_model.dart';
 
 class SplashView extends ConsumerStatefulWidget {

@@ -1,4 +1,3 @@
-// create provider for BatchLocalDataSource
 import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student_management_starter/core/failure/failure.dart';
@@ -6,26 +5,25 @@ import 'package:student_management_starter/core/networking/local/hive_service.da
 import 'package:student_management_starter/features/courses/data/model/course_hive_model.dart';
 import 'package:student_management_starter/features/courses/domain/entity/course_entity.dart';
 
-
-final courseLocalDataSourceProvider = Provider((ref) => CourseLocalDataSource(
-      hiveService: ref.read(hiveServiceProvider), //Passing Hive Service Object
-      courseHiveModel:
-          ref.read(courseHiveModelProvider), //Passing BatchHiveModel Object
+// Provider
+final courseLocalSourceProvider = Provider((ref) => CourseLocalSource(
+      hiveService: ref.read(hiveServiceProvider),
+      courseHiveModel: ref.read(courseHiveModelProvider),
     ));
 
-class CourseLocalDataSource {
+class CourseLocalSource {
   final HiveService hiveService;
   final CourseHiveModel courseHiveModel;
 
-  CourseLocalDataSource({
+  CourseLocalSource({
     required this.hiveService,
     required this.courseHiveModel,
   });
 
-  //Add course
+  // Add Course
   Future<Either<Failure, bool>> addCourse(CourseEntity course) async {
     try {
-      //convert Entity to Hive Object
+      // Convert Entity to Hive Object
       final hiveCourse = courseHiveModel.fromEntity(course);
 
       // Add to Hive
@@ -36,17 +34,15 @@ class CourseLocalDataSource {
     }
   }
 
-  //get all courses
-
+  // Get All Courses
   Future<Either<Failure, List<CourseEntity>>> getAllCourses() async {
     try {
-      //get all courses from hive
+      // Get all Courses from Hive
       final hiveCourses = await hiveService.getAllCourses();
 
-      //convert hive list to  entity list
-      //As the database returns CourseHiveModel
-
+      // Convert Hive List to Entry list
       final courses = courseHiveModel.toEntityList(hiveCourses);
+
       return Right(courses);
     } catch (e) {
       return Left(Failure(error: e.toString()));
@@ -54,10 +50,13 @@ class CourseLocalDataSource {
   }
 
   // Delete Course
-  Future<Either<Failure, bool>> deleteCourse(String id) async {
+  Future<Either<Failure, bool>> deleteCourse(CourseEntity course) async {
     try {
-      // Delete from Hive
-      await hiveService.deleteCourse(id);
+      // Convert Entity to Hive Object
+      final hiveCourse = courseHiveModel.fromEntity(course);
+
+      // Add to Hive
+      await hiveService.deleteCourse(hiveCourse);
       return const Right(true);
     } catch (e) {
       return Left(Failure(error: e.toString()));

@@ -5,75 +5,59 @@ import 'package:student_management_starter/features/batch/domain/entity/batch_en
 import 'package:student_management_starter/features/batch/domain/usecases/batch_usecase.dart';
 import 'package:student_management_starter/features/batch/presentation/state/batch_state.dart';
 
-//Provider
+// Provider
 final batchViewModelProvider =
-    StateNotifierProvider<BatchViewModel, BatchState>((ref) {
-  return BatchViewModel(ref.read(batchUsecaseProvider));
-});
+    StateNotifierProvider<BatchViewModel, BatchState>(
+  (ref) {
+    return BatchViewModel(batchUseCase: ref.read(batchUseCaseProvider));
+  },
+);
 
 class BatchViewModel extends StateNotifier<BatchState> {
-  BatchViewModel(this.batchUseCase) : super(BatchState.initial()) {
+  BatchViewModel({
+    required this.batchUseCase,
+  }) : super(BatchState.initial()) {
     getAllBatches();
   }
 
   final BatchUseCase batchUseCase;
 
   addBatch(BatchEntity batch) async {
-    //to show the progressbar
     state = state.copyWith(isLoading: true);
     var data = await batchUseCase.addBatch(batch);
+    data.fold((l) {
+      state = state.copyWith(isLoading: false, error: l.error);
+      showMySnackBar(message: l.error, color: Colors.red);
+    }, (r) {
+      state = state.copyWith(isLoading: false, error: null);
+      showMySnackBar(message: 'Batch Added Successfully');
+    });
 
-    data.fold(
-      (l) {
-        //show error message
-        state = state.copyWith(isLoading: false, error: l.error);
-        showMySnackBar(message: l.error, color: Colors.red);
-      },
-      (r) {
-        //show success message
-        state = state.copyWith(isLoading: false, error: null);
-        showMySnackBar(message: 'Batch added successfully!');
-      },
-    );
     getAllBatches();
   }
 
-  //for getting all batches
+  // for getting all batches
   getAllBatches() async {
-    //To show the progress bar
     state = state.copyWith(isLoading: true);
     var data = await batchUseCase.getAllBatches();
-
-    data.fold(
-      (l) {
-        //show error message
-        state = state.copyWith(isLoading: false, error: l.error);
-      },
-      (r) {
-        //show success message or simply load data in UI
-        state = state.copyWith(isLoading: false, lstBatches: r, error: null);
-      },
-    );
+    data.fold((l) {
+      state = state.copyWith(isLoading: false, error: l.error);
+    }, (r) {
+      state = state.copyWith(isLoading: false, lstBatches: r, error: null);
+    });
   }
 
-  // For deleting a batch
+  // for deleting batch
   deleteBatch(BatchEntity batch) async {
-    // To show the progress bar
     state = state.copyWith(isLoading: true);
-    var data = await batchUseCase.deleteBatch(batch.batchId!);
-
-    data.fold(
-      (l) {
-        state = state.copyWith(isLoading: false, error: l.error);
-        showMySnackBar(message: l.error, color: Colors.red);
-      },
-      (r) {
-        state.lstBatches.remove(batch);
-        state = state.copyWith(isLoading: false, error: null);
-        showMySnackBar(message: "Batch deleted successfully");
-      },
-    );
-
+    var data = await batchUseCase.deleteBatch(batch);
+    data.fold((l) {
+      state = state.copyWith(isLoading: false, error: l.error);
+      showMySnackBar(message: l.error, color: Colors.red);
+    }, (r) {
+      state = state.copyWith(isLoading: false, error: null);
+      showMySnackBar(message: 'Batch Deleted Successfully');
+    });
     getAllBatches();
   }
 }

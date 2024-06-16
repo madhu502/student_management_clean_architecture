@@ -8,6 +8,6 @@ class BatchViewNavigator{}
 
 mixin BatchViewRoute {
   openBatchView(){
-    NavigateRoute.popAndPushRoute(const AddBatchView());
+    NavigateRoute.popAndPushRoute(const BatchView());
   }
 }

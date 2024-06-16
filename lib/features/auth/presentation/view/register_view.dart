@@ -8,9 +8,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:student_management_starter/features/auth/domain/entity/auth_entity.dart';
 import 'package:student_management_starter/features/auth/presentation/viewmodel/auth_view_model.dart';
 import 'package:student_management_starter/features/batch/domain/entity/batch_entity.dart';
-import 'package:student_management_starter/features/batch/presentation/viewmodel/batch_view_model.dart';
 import 'package:student_management_starter/features/courses/domain/entity/course_entity.dart';
 import 'package:student_management_starter/features/courses/presentation/viewmodel/course_view_model.dart';
+
+import '../../../batch/presentation/viewmodel/batch_view_model.dart';
 
 class RegisterView extends ConsumerStatefulWidget {
   const RegisterView({super.key});
@@ -29,14 +30,13 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
   }
 
   File? _img;
+
   Future _browseImage(WidgetRef ref, ImageSource imageSource) async {
     try {
       final image = await ImagePicker().pickImage(source: imageSource);
       if (image != null) {
-        setState(() {
-          _img = File(image.path);
-          ref.read(authViewModelProvider.notifier).uploadImage(_img!);
-        });
+        _img = File(image.path);
+        ref.read(authViewModelProvider.notifier).uploadImage(_img!).toString();
       } else {
         return;
       }
@@ -49,13 +49,11 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
 
   final _key = GlobalKey<FormState>();
 
-  final _fnameController = TextEditingController(text: 'kiran');
-  final _lnameController = TextEditingController(text: 'kiran123');
-  final _phoneController = TextEditingController(text: '989898989898');
-  final _usernameController = TextEditingController(text: 'kiran');
-  final _passwordController = TextEditingController(text: 'kiran123');
-
-  bool isObscure = true;
+  final _fnameController = TextEditingController();
+  final _lnameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   BatchEntity? _dropDownValue;
   final List<CourseEntity> _lstCourseSelected = [];
@@ -64,6 +62,7 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
   Widget build(BuildContext context) {
     var batchState = ref.watch(batchViewModelProvider);
     var courseState = ref.watch(courseViewModelProvider);
+    var authState = ref.watch(authViewModelProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -99,7 +98,6 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                                   checkCameraPermission();
                                   _browseImage(ref, ImageSource.camera);
                                   Navigator.pop(context);
-                                  // Upload image it is not null
                                 },
                                 icon: const Icon(Icons.camera),
                                 label: const Text('Camera'),
@@ -260,18 +258,11 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                   _gap,
                   TextFormField(
                     controller: _passwordController,
-                    obscureText: isObscure,
                     decoration: InputDecoration(
                       labelText: 'Password',
                       suffixIcon: IconButton(
-                        icon: Icon(
-                          isObscure ? Icons.visibility : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            isObscure = !isObscure;
-                          });
-                        },
+                        icon: const Icon(Icons.visibility),
+                        onPressed: () {},
                       ),
                     ),
                     validator: ((value) {
@@ -287,26 +278,27 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (_key.currentState!.validate()) {
-                          var student = AuthEntity(
-                            fname: _fnameController.text,
-                            lname: _lnameController.text,
-                            image:
-                                ref.read(authViewModelProvider).imageName ?? '',
-                            phone: _phoneController.text,
-                            username: _usernameController.text,
-                            password: _passwordController.text,
-                            batch: _dropDownValue!,
-                            courses: _lstCourseSelected,
-                          );
-
+                          // Register
+                          AuthEntity auth = AuthEntity(
+                              fname: _fnameController.text,
+                              lname: _lnameController.text,
+                              phone: _phoneController.text,
+                              batch: _dropDownValue!,
+                              courses: _lstCourseSelected,
+                              username: _usernameController.text,
+                              password: _passwordController.text,
+                              image: authState.imageName ?? '');
                           ref
                               .read(authViewModelProvider.notifier)
-                              .registerStudent(student);
+                              .addStudent(auth: auth);
                         }
                       },
                       child: const Text('Register'),
                     ),
                   ),
+                  authState.isLoading
+                      ? const CircularProgressIndicator()
+                      : const SizedBox()
                 ],
               ),
             ),

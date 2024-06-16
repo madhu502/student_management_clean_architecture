@@ -7,29 +7,31 @@ import 'package:student_management_starter/features/auth/data/data_source/local/
 import 'package:student_management_starter/features/auth/domain/entity/auth_entity.dart';
 import 'package:student_management_starter/features/auth/domain/repository/auth_repository.dart';
 
-final authLocalRepositoryProvider = Provider<IAuthRepository>((ref) {
+final authLocalRepository = Provider<IAuthRepository>((ref) {
   return AuthLocalRepository(
-    ref.read(authLocalDataSourceProvider),
-  );
+      authLocalDataSource: ref.read(authLocalDataSourceProvider));
 });
 
 class AuthLocalRepository implements IAuthRepository {
-  final AuthLocalDataSource _authLocalDataSource;
+  final AuthLocalDataSource authLocalDataSource;
 
-  AuthLocalRepository(this._authLocalDataSource);
+  AuthLocalRepository({required this.authLocalDataSource});
 
   @override
-  Future<Either<Failure, bool>> loginStudent(String username, String password) {
-    return _authLocalDataSource.loginStudent(username, password);
+  Future<Either<Failure, bool>> addStudent(AuthEntity auth) {
+    return authLocalDataSource.addStudent(auth);
   }
 
   @override
-  Future<Either<Failure, bool>> registerStudent(AuthEntity student) {
-    return _authLocalDataSource.registerStudent(student);
+  Future<Either<Failure, String>> login(String username, String password) {
+    return authLocalDataSource.login(username, password);
   }
 
   @override
-  Future<Either<Failure, String>> uploadProfilePicture(File file) async {
-    return const Right("");
+  Future<Either<Failure, String>> uploadProfilePicture(File file) {
+    // TODO: implement uploadProfilePicture
+    throw UnimplementedError();
   }
+  
+  
 }

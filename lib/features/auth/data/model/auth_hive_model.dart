@@ -2,10 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:student_management_starter/app/constants/hive_table_constant.dart';
 import 'package:student_management_starter/features/auth/domain/entity/auth_entity.dart';
-
 import 'package:student_management_starter/features/batch/data/model/batch_hive_model.dart';
 import 'package:student_management_starter/features/courses/data/model/course_hive_model.dart';
-
 import 'package:uuid/uuid.dart';
 
 part 'auth_hive_model.g.dart';

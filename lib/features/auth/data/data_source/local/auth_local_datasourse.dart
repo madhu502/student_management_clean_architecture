@@ -1,3 +1,4 @@
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student_management_starter/core/failure/failure.dart';
@@ -5,35 +6,51 @@ import 'package:student_management_starter/core/networking/local/hive_service.da
 import 'package:student_management_starter/features/auth/data/model/auth_hive_model.dart';
 import 'package:student_management_starter/features/auth/domain/entity/auth_entity.dart';
 
-final authLocalDataSourceProvider = Provider(
-  (ref) => AuthLocalDataSource(
-    ref.read(hiveServiceProvider),
-    ref.read(authHiveModelProvider),
-  ),
-);
+final authLocalDataSourceProvider = Provider((ref) => AuthLocalDataSource(
+    hiveService: ref.read(hiveServiceProvider),
+    authHiveModel: ref.read(authHiveModelProvider)));
 
 class AuthLocalDataSource {
-  final HiveService _hiveService;
-  final AuthHiveModel _authHiveModel;
+  final HiveService hiveService;
+  final AuthHiveModel authHiveModel;
 
-  AuthLocalDataSource(this._hiveService, this._authHiveModel);
+  AuthLocalDataSource({required this.hiveService, required this.authHiveModel});
 
-  Future<Either<Failure, bool>> registerStudent(AuthEntity student) async {
+  // Add Student
+  Future<Either<Failure, bool>> addStudent(AuthEntity auth) async {
     try {
-      await _hiveService.addStudent(_authHiveModel.toHiveModel(student));
+      // If already username throw error
+
+      final hiveStudent = authHiveModel.toHiveModel(auth);
+
+      await hiveService.addStudent(hiveStudent);
+
       return const Right(true);
     } catch (e) {
       return Left(Failure(error: e.toString()));
     }
   }
 
-  Future<Either<Failure, bool>> loginStudent(
-    String username,
-    String password,
-  ) async {
+  // Get Student
+  Future<Either<Failure, AuthEntity>> getStudent(String username) async {
     try {
-      AuthHiveModel? students = await _hiveService.login(username, password);
-      return const Right(true);
+      final hiveStudent = await hiveService.getStudent(username);
+
+      final student = hiveStudent.toEntity();
+
+      return Right(student);
+    } catch (e) {
+      return Left(Failure(error: e.toString()));
+    }
+  }
+
+  // Login
+  Future<Either<Failure, String>> login(
+      String username, String password) async {
+    try {
+      await hiveService.login(username, password);
+
+      return const Right('Login Success');
     } catch (e) {
       return Left(Failure(error: e.toString()));
     }

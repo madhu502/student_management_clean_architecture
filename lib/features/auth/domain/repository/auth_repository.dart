@@ -7,11 +7,11 @@ import 'package:student_management_starter/features/auth/data/repository/remote/
 import 'package:student_management_starter/features/auth/domain/entity/auth_entity.dart';
 
 final authRepositoryProvider = Provider<IAuthRepository>((ref) {
-  return ref.read(authRemoteRepositoryProvider);
+  return ref.watch(authRemoteRepository);
 });
 
 abstract class IAuthRepository {
-  Future<Either<Failure, bool>> registerStudent(AuthEntity student);
-  Future<Either<Failure, bool>> loginStudent(String username, String password);
+  Future<Either<Failure, bool>> addStudent(AuthEntity auth);
+  Future<Either<Failure, String>> login(String username, String password);
   Future<Either<Failure, String>> uploadProfilePicture(File file);
 }
